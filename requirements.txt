@@ -11,3 +11,6 @@ tqdm
 matplotlib
 pyqt5
 ipython
+jupyter
+notebook
+jupytext
