@@ -62,7 +62,7 @@ lbl_img[cell_pixels] = lbls
 
 # Show segmentation mask
 plt.figure()
-plt.imshow(lbl_img, cmap="PuBuGn")
+plt.imshow(lbl_img.T, cmap="PuBuGn")
 # Update colorbar with celltype prediction labels
 cbar = plt.colorbar()
 ticklabels = [                                                              
@@ -76,6 +76,6 @@ cbar.set_ticks(ticks, labels=ticklabels)
 outline = np.zeros_like(mask, dtype=np.uint8)
 outline[:, 1:][mask[:, :-1] != mask[:, 1:]] = 1
 outline[1:, :][mask[:-1, :] != mask[1:, :]] = 1
-plt.imshow(outline, cmap=plt.cm.gray, alpha=outline.astype(float))
+plt.imshow(outline.T, cmap=plt.cm.gray, alpha=outline.T.astype(float))
 
 plt.show()
