@@ -3,6 +3,7 @@ import yaml
 from tqdm import tqdm
 import numpy as np
 import scipy as sp
+import matplotlib.pyplot as plt
 import tifffile as tff
 from skimage.exposure import rescale_intensity, equalize_adapthist
 from skimage.measure import regionprops
@@ -98,7 +99,7 @@ def preprocess(orig_img, mask, ch_names):
     print(f"Used marker panel: {marker_intersection}")
 
     kernel_size = 128
-    crop_size = 64 
+    crop_size = 64
     num_channels = 32 # minimum of all dataset channel lengths
     # check master list against channel_lst
     assert not set(channel_lst) - set(master_channel_lst)
@@ -195,7 +196,7 @@ def convert_to_model_input(X, y, channel_list):
             ["None"] * appearances_list.shape[0]
         ),
     }
-    
+
     return model_input
 
 def run_model(model_input, model_dir):
@@ -217,3 +218,37 @@ def run_model(model_input, model_dir):
 
     return dict(enumerate(cell_type_predictions))
 
+
+def visualize_predictions(mask, celltypes):
+    # Get total number of each cell type in prediction
+    ctidx = np.array(list(celltypes.keys())) + 1
+    categories, counts = np.unique(list(celltypes.values()), return_counts=True)
+
+    # Map categories to integers for viz
+    cat_to_int = {c: i for c, i in zip(categories, range(1, len(categories) + 1))}
+    ct = list(celltypes.values())
+    ctidx_to_ct = dict(zip(ctidx, ct))
+
+    # Map predictions to segmentation mask
+    lbl_img = np.zeros_like(mask, dtype=np.uint8)
+    cell_pixels = mask != 0
+    lbls = np.array([cat_to_int[ctidx_to_ct[val]] for val in tqdm(mask[cell_pixels])])
+    lbl_img[cell_pixels] = lbls
+
+    # Show segmentation mask
+    plt.figure()
+    plt.imshow(lbl_img.T, cmap="PuBuGn")
+    # Update colorbar with celltype prediction labels
+    cbar = plt.colorbar()
+    ticklabels = [
+        f"{num}: {lbl} ({cts})" for num, (lbl, cts) in
+        enumerate(zip([""] + list(cat_to_int), ["bgnd"] + counts.tolist()))
+    ]
+    ticks = range(len(ticklabels))
+    cbar.set_ticks(ticks, labels=ticklabels)
+
+    # Add cell mask outline to image
+    outline = np.zeros_like(mask, dtype=np.uint8)
+    outline[:, 1:][mask[:, :-1] != mask[:, 1:]] = 1
+    outline[1:, :][mask[:-1, :] != mask[1:, :]] = 1
+    plt.imshow(outline.T, cmap=plt.cm.gray, alpha=outline.T.astype(float))
