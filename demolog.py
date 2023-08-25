@@ -49,18 +49,21 @@ celltypes = run_model(model_input, model_dir)
 ctidx = np.array(list(celltypes.keys())) + 1
 categories, counts = np.unique(list(celltypes.values()), return_counts=True)
 
+# Map categories to integers for viz
 cat_to_int = {c: i for c, i in zip(categories, range(1, len(categories) + 1))}
 ct = list(celltypes.values())
 ctidx_to_ct = dict(zip(ctidx, ct))
 
+# Map predictions to segmentation mask
 lbl_img = np.zeros_like(mask, dtype=np.uint8)
 cell_pixels = mask != 0
 lbls = np.array([cat_to_int[ctidx_to_ct[val]] for val in tqdm(mask[cell_pixels])])
 lbl_img[cell_pixels] = lbls
 
-
+# Show segmentation mask
 plt.figure()
 plt.imshow(lbl_img, cmap="PuBuGn")
+# Update colorbar with celltype prediction labels
 cbar = plt.colorbar()
 ticklabels = [                                                              
     f"{num}: {lbl} ({cts})" for num, (lbl, cts) in                          
@@ -68,13 +71,11 @@ ticklabels = [
 ]                                                                           
 ticks = range(len(ticklabels))                                              
 cbar.set_ticks(ticks, labels=ticklabels)
-mask.shape
 
-ol2 = np.zeros_like(mask, dtype=np.uint8)
-ol2.shape
-ol2[:, 1:][mask[:, :-1] != mask[:, 1:]] = 1
-plt.figure(); plt.imshow(ol2)
-ol2[1:, :][mask[:-1, :] != mask[1:, :]] = 1
-plt.figure();
-plt.imshow(lbl_img, cmap="PuBuGn")
-plt.imshow(ol2, cmap=plt.cm.gray, alpha=ol2.astype(float))
+# Add cell mask outline to image
+outline = np.zeros_like(mask, dtype=np.uint8)
+outline[:, 1:][mask[:, :-1] != mask[:, 1:]] = 1
+outline[1:, :][mask[:-1, :] != mask[1:, :]] = 1
+plt.imshow(outline, cmap=plt.cm.gray, alpha=outline.astype(float))
+
+plt.show()
