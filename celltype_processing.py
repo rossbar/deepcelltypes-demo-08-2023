@@ -1,4 +1,5 @@
 import os
+import yaml
 from tqdm import tqdm
 import numpy as np
 import scipy as sp
@@ -6,6 +7,7 @@ import tifffile as tff
 from skimage.exposure import rescale_intensity, equalize_adapthist
 from skimage.measure import regionprops
 from tensorflow.keras.models import load_model
+import tensorflow as tf
 
 def histogram_normalization(image, kernel_size=None):
     """
@@ -88,11 +90,12 @@ def preprocess(orig_img, mask, ch_names):
             channel_lst.append(master_channels[key])
             img.append(orig_img[..., idx].T)
     multiplex_img = np.asarray(img)
+    class_X = multiplex_img.T.astype(np.float32)
 
     marker_intersection = set(master_channels) & {ch.upper() for ch in ch_names}
 
     assert len(marker_intersection) == multiplex_img.shape[0]
-    print(f"Used marker panel: {marker_info['intersection']}")
+    print(f"Used marker panel: {marker_intersection}")
 
     kernel_size = 128
     crop_size = 64 
@@ -106,10 +109,10 @@ def preprocess(orig_img, mask, ch_names):
 
     # B, Y, X, C
     X, y = pad_cell(X, mask, crop_size)
-    return X, y
+    return X, y, channel_lst
 
 
-def convert_to_model_input(X, y):
+def convert_to_model_input(X, y, channel_list):
     props = regionprops(y, cache=False)
     appearances_list = []
     padding_mask_lst = []
@@ -154,7 +157,7 @@ def convert_to_model_input(X, y):
         )
 
         channel_names = tf.concat(
-            [channel_lst, tf.repeat([b"None"], repeats=padding_len)], axis=0
+            [channel_list, tf.repeat([b"None"], repeats=padding_len)], axis=0
         )
 
         mask_vec = tf.concat(
@@ -195,14 +198,22 @@ def convert_to_model_input(X, y):
     
     return model_input
 
-def run_model(model_input, model_dir, output_categories):
+def run_model(model_input, model_dir):
+    # Load model configuration
+    config_path = model_dir / "config.yaml"
+    with open(config_path, "r") as fh:
+        model_config = yaml.load(fh, yaml.Loader)
+    master_cell_types = np.asarray(model_config["cell_types"])
 
-    ctm = load_model(model_dir, compile=False)
+    # Load model
+    ctm = load_model(model_dir / "saved_model", compile=False)
 
+    # Run model
     logits = ctm.predict(model_input)[0]
 
+    # Parse model outputs
     pred_idx = np.argmax(sp.special.softmax(logits, axis=1), axis=1)
-    cell_type_predictions = output_categories[1:][pred_idx]
+    cell_type_predictions = master_cell_types[1:][pred_idx]
 
     return dict(enumerate(cell_type_predictions))
 
