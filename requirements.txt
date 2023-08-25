@@ -10,3 +10,4 @@ cwltool
 tqdm
 matplotlib
 pyqt5
+ipython

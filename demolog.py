@@ -17,7 +17,7 @@ if os.path.exists("data/mask.tif"):
     os.remove("data/mask.tif")
 
 # Run mesmer in container
-get_ipython().system('sudo docker run -it --gpus all -v $PWD/data:/data vanvalenlab/deepcell-applications:latest-gpu mesmer --nuclear-image /data/DCIS_Risom_breast_example_MIBI.tif --nuclear-channel 27 --membrane-image /data/DCIS_Risom_breast_example_MIBI.tif --membrane-channel 44 --image-mpp 0.49 --output-name /data/mask.tif --compartment whole-cell')
+get_ipython().system('sudo docker run -it -v $PWD/data:/data vanvalenlab/deepcell-applications:latest mesmer --nuclear-image /data/DCIS_Risom_breast_example_MIBI.tif --nuclear-channel 27 --membrane-image /data/DCIS_Risom_breast_example_MIBI.tif --membrane-channel 44 --image-mpp 0.49 --output-name /data/mask.tif --compartment whole-cell')
 
 # Load segmentation mask resulting from mesmer
 mask = tff.imread("data/mask.tif").squeeze()
