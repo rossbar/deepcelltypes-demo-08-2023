@@ -29,6 +29,7 @@ from:
 > composition of tumor stroma. Cell. 2022 Jan 20;185(2):299-310.e18.
 
 ```{code-cell} ipython3
+:tags: [remove-output]
 import os
 from pathlib import Path
 import numpy as np

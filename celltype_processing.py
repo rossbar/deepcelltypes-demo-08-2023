@@ -235,7 +235,7 @@ def visualize_predictions(mask, celltypes):
     lbl_img[cell_pixels] = lbls
 
     # Show segmentation mask
-    plt.figure()
+    plt.figure(figsize=(16, 12))
     plt.imshow(lbl_img.T, cmap="PuBuGn")
     # Update colorbar with celltype prediction labels
     cbar = plt.colorbar()
