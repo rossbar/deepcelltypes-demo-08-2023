@@ -3,9 +3,10 @@
 Cell-type prediction for multiplexed spatial proteomic data.
 
 To run the demo, you will need:
-#. Python
-#. A running docker daemon
-#. The prototype model and example data
+
+1. Python
+2. A running docker daemon
+3. The prototype model and example data
 
 ## Setup
 
