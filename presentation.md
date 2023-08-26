@@ -11,7 +11,22 @@ kernelspec:
   name: python3
 ---
 
-# Deepcelltypes Demo
+# Deepcelltypes Demo - Cell type prediction
+
++++ {"slideshow": {"slide_type": "subslide"}}
+
+This notebook provides and example of the deepcell ecosystem applied to
+multiplexed spatial proteomic data for cell-type prediction.
+
+The dataset used in this demo consists of a MIBI image of breast tissue drawn
+from:
+
+> Risom T, Glass DR, Averbukh I, Liu CC, Baranski A, Kagel A, McCaffrey
+> EF, Greenwald NF, Rivero-Gutierrez B, Strand SH, Varma S, Kong A, Keren L,
+> Srivastava S, Zhu C, Khair Z, Veis DJ, Deschryver K, Vennam S, Maley C, Hwang
+> ES, Marks JR, Bendall SC, Colditz GA, West RB, Angelo M. Transition to invasive
+> breast cancer is associated with progressive changes in the structure and
+> composition of tumor stroma. Cell. 2022 Jan 20;185(2):299-310.e18.
 
 ```{code-cell} ipython3
 import os
@@ -26,7 +41,7 @@ from celltype_processing import (
 )
 ```
 
-Load image and prepare for segmentation
+We begin by loading the multiplexed image:
 
 ```{code-cell} ipython3
 # Load image
@@ -35,15 +50,29 @@ img = tff.imread("data/DCIS_Risom_breast_example_MIBI.tif")
 channels = np.loadtxt("data/channelnames.txt", dtype=str, delimiter="\t")
 # Mapping channel names to img indices
 ch_to_idx = dict(zip(channels, range(channels.shape[0])))
+channels  # The image marker panel
 ```
 
 ```{code-cell} ipython3
-# Rm cruft from previous runs
+# A bit of clean up to prevent collision with previous runs
 if os.path.exists("data/mask.tif"):
     os.remove("data/mask.tif")
 ```
 
-Segment
+Next, the image is segmented using [Mesmer](https://pubmed.ncbi.nlm.nih.gov/34795433/).
+The mesmer model expects two inputs for whole-cell segmentation: a nuclear
+marker and a pan-membrane marker.
+
+In this case, we can use Histone H3 and pan-cytokeratin + CD45, respectively:
+
+```{code-cell} ipython3
+print(f"Nuclear channel index: {ch_to_idx['HH3']}")
+print(f"Whole-cell index: {ch_to_idx['sum_PanCK_CD45']}")
+```
+
+At this point we have all the necessary inputs to run Mesmer. For fine-grained
+control of the computational environment (including hardware acceleration),
+we'll use a containerized version of the model:
 
 ```{code-cell} ipython3
 !docker run -it -v \
@@ -58,12 +87,12 @@ Segment
     --compartment whole-cell
 ```
 
+The model generates a segmentation mask, which is saved to disk.
+
 ```{code-cell} ipython3
 # Load segmentation mask resulting from mesmer
 mask = tff.imread("data/mask.tif").squeeze()
 ```
-
-Visualize
 
 ```{code-cell} ipython3
 # Visualize nuclear, membrane, and resulting masks
@@ -84,27 +113,35 @@ for a, im, ttl in zip(
     a.set_title(ttl)
 ```
 
-Prepare image data for prediction
+The primary inputs to the deepcelltypes prediction model are the multiplexed
+image, the segmentation, and the marker panel which describes the mapping between
+the multiplexed channel and the protein marker.
+
+The current version of the model has been trained on datasets across imaging
+platforms comprising a wide variety of protein markers, and incorporates over
+50 markers for prediction.
+
+The number of protein markers utilized by the model continually increases with
+each iteration as more data is ingested.
 
 ```{code-cell} ipython3
 model_input = convert_to_model_input(*preprocess(img, mask, channels))
 ```
 
-Run prediction
+The deepcelltypes model classifies each segmented cell. This version of the
+model comprises 17 cell-type classes:
 
 ```{code-cell} ipython3
 model_dir = Path("model")
 celltypes = run_model(model_input, model_dir)
 ```
 
-Predicted distribution of cell types
-
 ```{code-cell} ipython3
 categories, counts = np.unique(list(celltypes.values()), return_counts=True)
 dict(zip(categories, counts))
 ```
 
-Visualize
+The predictions map to the cell masks from the segmentation:
 
 ```{code-cell} ipython3
 visualize_predictions(mask, celltypes)
