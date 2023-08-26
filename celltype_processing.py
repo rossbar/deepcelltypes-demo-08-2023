@@ -1,6 +1,5 @@
 import os
 import yaml
-from tqdm import tqdm
 import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
@@ -124,7 +123,7 @@ def convert_to_model_input(X, y, channel_list):
     rs = 32
     num_channels = 32 # minimum of all dataset channel lengths
 
-    for prop_idx, prop in tqdm(enumerate(props)):
+    for prop_idx, prop in enumerate(props):
         curr_cell = prop_idx + 1
         label = prop.label
         delta = crop_size // 2
@@ -232,7 +231,7 @@ def visualize_predictions(mask, celltypes):
     # Map predictions to segmentation mask
     lbl_img = np.zeros_like(mask, dtype=np.uint8)
     cell_pixels = mask != 0
-    lbls = np.array([cat_to_int[ctidx_to_ct[val]] for val in tqdm(mask[cell_pixels])])
+    lbls = np.array([cat_to_int[ctidx_to_ct[val]] for val in mask[cell_pixels]])
     lbl_img[cell_pixels] = lbls
 
     # Show segmentation mask

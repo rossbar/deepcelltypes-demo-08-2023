@@ -30,11 +30,12 @@ from:
 
 ```{code-cell} ipython3
 import os
-from tqdm import tqdm
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import tifffile as tff
+import tensorflow as tf
+tf.get_logger().setLevel("ERROR")
 
 from celltype_processing import (
     preprocess, convert_to_model_input, run_model, visualize_predictions
@@ -75,6 +76,7 @@ control of the computational environment (including hardware acceleration),
 we'll use a containerized version of the model:
 
 ```{code-cell}
+:tags: [remove-output]
 !docker run -it -v \
     $PWD/data:/data \
     vanvalenlab/deepcell-applications:latest mesmer \
@@ -132,6 +134,7 @@ The deepcelltypes model classifies each segmented cell. This version of the
 model comprises 17 cell-type classes:
 
 ```{code-cell} ipython3
+:tags: [remove-output]
 model_dir = Path("model")
 celltypes = run_model(model_input, model_dir)
 ```
