@@ -264,7 +264,7 @@ ES, Marks JR, Bendall SC, Colditz GA, West RB, Angelo M. Transition to invasive
 breast cancer is associated with progressive changes in the structure and
 composition of tumor stroma. Cell. 2022 Jan 20;185(2):299-310.e18.</p>
 </div></blockquote>
-<div class="cell docutils container">
+<div class="cell tag_remove-output docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -277,17 +277,6 @@ composition of tumor stroma. Cell. 2022 Jan 20;185(2):299-310.e18.</p>
 <span class="kn">from</span> <span class="nn">celltype_processing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">preprocess</span><span class="p">,</span> <span class="n">convert_to_model_input</span><span class="p">,</span> <span class="n">run_model</span><span class="p">,</span> <span class="n">visualize_predictions</span>
 <span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-08-25 19:39:27.046607: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-08-25 19:39:27.101464: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-2023-08-25 19:39:27.101992: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
-To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2023-08-25 19:39:28.082750: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
 </pre></div>
 </div>
 </div>
@@ -414,7 +403,7 @@ each iteration as more data is ingested.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Used marker panel: {&#39;CD45&#39;, &#39;CD11C&#39;, &#39;PANCK&#39;, &#39;TRYPTASE&#39;, &#39;CD3&#39;, &#39;CD8&#39;, &#39;MPO&#39;, &#39;PDL1&#39;, &#39;CD56&#39;, &#39;FAP&#39;, &#39;CD14&#39;, &#39;CD4&#39;, &#39;HER2&#39;, &#39;CD44&#39;, &#39;CD68&#39;, &#39;CD20&#39;, &#39;CD31&#39;, &#39;FOXP3&#39;, &#39;PD1&#39;}
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Used marker panel: {&#39;CD4&#39;, &#39;PDL1&#39;, &#39;CD3&#39;, &#39;FOXP3&#39;, &#39;CD8&#39;, &#39;CD31&#39;, &#39;FAP&#39;, &#39;HER2&#39;, &#39;CD44&#39;, &#39;CD45&#39;, &#39;MPO&#39;, &#39;PD1&#39;, &#39;CD14&#39;, &#39;CD68&#39;, &#39;PANCK&#39;, &#39;CD20&#39;, &#39;CD56&#39;, &#39;TRYPTASE&#39;, &#39;CD11C&#39;}
 </pre></div>
 </div>
 </div>
