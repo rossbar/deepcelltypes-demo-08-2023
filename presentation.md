@@ -74,7 +74,7 @@ At this point we have all the necessary inputs to run Mesmer. For fine-grained
 control of the computational environment (including hardware acceleration),
 we'll use a containerized version of the model:
 
-```{code-cell} ipython3
+```{code-cell}
 !docker run -it -v \
     $PWD/data:/data \
     vanvalenlab/deepcell-applications:latest mesmer \
@@ -103,7 +103,7 @@ mem_ch = np.clip(mem_ch, a_min=0, a_max=np.quantile(mem_ch, 0.999))
 ```
 
 ```{code-cell} ipython3
-fig, ax = plt.subplots(1, 3, figsize=(9, 12))
+fig, ax = plt.subplots(1, 3, figsize=(10, 8))
 for a, im, ttl in zip(
     ax,
     (nuc_ch, mem_ch, mask.squeeze()),

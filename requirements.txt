@@ -14,3 +14,6 @@ ipython
 jupyter
 notebook
 jupytext
+sphinx
+myst-nb
+pydata-sphinx-theme
